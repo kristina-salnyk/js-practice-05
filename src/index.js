@@ -15,6 +15,8 @@ function searchInputHandler(event) {
   const countryName = event.target.value.trim();
   if (!countryName) return;
 
+  clearCountriesMarkup();
+
   fetchCountries(countryName)
     .then(countries => {
       if (countries.length > 10)
@@ -33,9 +35,37 @@ function searchInputHandler(event) {
     });
 }
 
-function renderCountriesList(countries) {}
+function renderCountriesList(countries) {
+  refs.countryList.innerHTML = countries
+    .map(country => {
+      return `
+          <li class="country-list__item">
+            <img src="${country.flags.svg}" width="50" height="30" alt="Flag of ${country.name.official}"/>
+            <p>${country.name.official}</p>
+          </li>
+      `;
+    })
+    .join('');
+}
 
-function renderCountryInfo(countries) {}
+function renderCountryInfo(countries) {
+  refs.countryInfo.innerHTML =
+    `
+    <h1 class="country-info__title">
+    <img src="${countries[0].flags.svg}" width="100" height="60" alt="Flag of ${countries[0].name.official}"/>` +
+    `${countries[0].name.official}</h1>
+    <p><span>Capital:</span> ${countries[0].capital}</p>
+    <p><span>Population:</span> ${countries[0].population}</p>
+    <p><span>Languages:</span> ${Object.values(countries[0].languages).join(
+      ', '
+    )}</p>
+`;
+}
+
+function clearCountriesMarkup() {
+  refs.countryList.innerHTML = '';
+  refs.countryInfo.innerHTML = '';
+}
 
 refs.searchInput.addEventListener(
   'input',

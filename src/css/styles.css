@@ -10,9 +10,13 @@ body {
   background-color: #fafafa;
   color: #212121;
   line-height: 1.5;
-  background-image:
-    radial-gradient(circle at 5px 5px, gray 0, white 2px);
+  background-image: radial-gradient(circle at 5px 5px, gray 0, white 2px);
   background-size: 30px 30px;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
 }
 
 #search-box {
@@ -23,6 +27,23 @@ body {
   width: 100%;
 }
 
-#search-box:focus{
+#search-box:focus {
   outline-color: darkblue;
+}
+
+.country-list__item,
+.country-info__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.country-list__item,
+.country-info {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.country-info span {
+  font-weight: bold;
 }
