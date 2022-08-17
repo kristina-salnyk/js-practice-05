@@ -1,7 +1,43 @@
 import './css/styles.css';
+import { fetchCountries } from './js/fetchCountries';
+import debounce from 'lodash.debounce';
+import { Notify } from 'notiflix';
 
 const DEBOUNCE_DELAY = 300;
 
-function fetchCountries(name){
-  return fetch(`https://restcountries.com/v3.1/name/${name}`);
+const refs = {
+  searchInput: document.getElementById('search-box'),
+  countryList: document.querySelector('.country-list'),
+  countryInfo: document.querySelector('.country-info'),
+};
+
+function searchInputHandler(event) {
+  const countryName = event.target.value.trim();
+  if (!countryName) return;
+
+  fetchCountries(countryName)
+    .then(countries => {
+      if (countries.length > 10)
+        Notify.info(
+          'Too many matches found. Please enter a more specific name.'
+        );
+      else if (countries.length === 1) renderCountryInfo(countries);
+      else renderCountriesList(countries);
+    })
+    .catch(error => {
+      // Not found error
+      if (Number(error.message) === 404)
+        Notify.failure('Oops, there is no country with that name.');
+      // Another error
+      else Notify.failure('Failed to get data, please try again later.');
+    });
 }
+
+function renderCountriesList(countries) {}
+
+function renderCountryInfo(countries) {}
+
+refs.searchInput.addEventListener(
+  'input',
+  debounce(searchInputHandler, DEBOUNCE_DELAY)
+);
