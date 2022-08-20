@@ -47,8 +47,11 @@ function renderCountriesList(countries) {
 }
 
 function renderCountryInfo(country) {
-  country.languages = Object.values(country.languages).join(', ');
-  refs.countryInfo.innerHTML = countryInfo(country);
+  const countryData = {
+    ...country,
+    languages: Object.values(country.languages).join(', '),
+  };
+  refs.countryInfo.innerHTML = countryInfo(countryData);
 }
 
 function clearCountriesMarkup() {
