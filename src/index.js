@@ -2,6 +2,8 @@ import './css/styles.css';
 import { fetchCountries } from './js/fetchCountries';
 import debounce from 'lodash.debounce';
 import { Notify } from 'notiflix';
+import countryInfo from './templates/country-info.hbs';
+import countriesList from './templates/countries-list.hbs';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -12,19 +14,24 @@ const refs = {
 };
 
 function searchInputHandler(event) {
+  clearCountriesMarkup();
+
   const countryName = event.target.value.trim();
   if (!countryName) return;
 
-  clearCountriesMarkup();
-
   fetchCountries(countryName)
     .then(countries => {
-      if (countries.length > 10)
+      if (countries.length > 10) {
         Notify.info(
           'Too many matches found. Please enter a more specific name.'
         );
-      else if (countries.length === 1) renderCountryInfo(countries);
-      else renderCountriesList(countries);
+        return;
+      }
+      if (countries.length === 1) {
+        renderCountryInfo(countries[0]);
+        return;
+      }
+      renderCountriesList(countries);
     })
     .catch(error => {
       // Not found error
@@ -36,30 +43,12 @@ function searchInputHandler(event) {
 }
 
 function renderCountriesList(countries) {
-  refs.countryList.innerHTML = countries
-    .map(country => {
-      return `
-          <li class="country-list__item">
-            <img src="${country.flags.svg}" width="50" height="30" alt="Flag of ${country.name.official}"/>
-            <p>${country.name.official}</p>
-          </li>
-      `;
-    })
-    .join('');
+  refs.countryList.innerHTML = countriesList(countries);
 }
 
-function renderCountryInfo(countries) {
-  refs.countryInfo.innerHTML =
-    `
-    <h1 class="country-info__title">
-    <img src="${countries[0].flags.svg}" width="100" height="60" alt="Flag of ${countries[0].name.official}"/>` +
-    `${countries[0].name.official}</h1>
-    <p><span>Capital:</span> ${countries[0].capital}</p>
-    <p><span>Population:</span> ${countries[0].population}</p>
-    <p><span>Languages:</span> ${Object.values(countries[0].languages).join(
-      ', '
-    )}</p>
-`;
+function renderCountryInfo(country) {
+  country.languages = Object.values(country.languages).join(', ');
+  refs.countryInfo.innerHTML = countryInfo(country);
 }
 
 function clearCountriesMarkup() {
