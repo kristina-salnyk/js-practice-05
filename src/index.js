@@ -14,13 +14,17 @@ const refs = {
 };
 
 function searchInputHandler(event) {
-  clearCountriesMarkup();
-
   const countryName = event.target.value.trim();
-  if (!countryName) return;
+  if (!countryName) {
+    clearCountriesMarkup();
+    Notify.info('Please enter the name of the country.');
+    return;
+  }
 
   fetchCountries(countryName)
     .then(countries => {
+      clearCountriesMarkup();
+
       if (countries.length > 10) {
         Notify.info(
           'Too many matches found. Please enter a more specific name.'
@@ -31,7 +35,10 @@ function searchInputHandler(event) {
         renderCountryInfo(countries[0]);
         return;
       }
-      renderCountriesList(countries);
+      if (countries.length <= 10) {
+        renderCountriesList(countries);
+        return;
+      }
     })
     .catch(error => {
       // Not found error
